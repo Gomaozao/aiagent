@@ -13,6 +13,7 @@ def main():
         type=str,
         help="gives answer to whatever question the user gives to gemini",
     )
+    parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
     args = parser.parse_args()
     load_dotenv()
 
@@ -28,12 +29,17 @@ def main():
         model="gemini-2.5-flash",
         contents=messages,
     )
+
     if response.usage_metadata is None:
         raise RuntimeError("Failed Request to API")
 
-    print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
-    print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
-    print(f"Response: {response.text}")
+    if args.verbose:
+        print(f"{response.text}")
+        print(f"User prompt: {args.user_prompt}")
+        print(f"Prompt tokens: {response.usage_metadata.prompt_token_count}")
+        print(f"Response tokens: {response.usage_metadata.candidates_token_count}")
+    else:
+        print(f"{response.text}")
 
 
 if __name__ == "__main__":
